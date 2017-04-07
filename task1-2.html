@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+
+        .form{
+            width:1200px;
+            height:600px;
+            margin:0 auto;
+            display:flex;
+            flex-flow:row wrap;
+            justify-content: center;
+        }
+        .name{
+            width:650px;
+            height:80px;
+            display: flex;
+            flex-flow: row wrap;
+            justify-content: flex-end;
+        }
+        .label{
+            font: "微软雅黑", Microsoft YaHei;
+            font-size: 1.5em;
+            text-align: right;
+        }
+        .input{
+            width:500px;
+            height:40px;
+        }
+        .input input{
+            width:500px;
+            height:40px;
+            margin-left: 50px;
+            border-radius:3px;
+        }
+        .sub{
+            width:600px;
+            height:50px;
+            display: flex;
+            justify-content: center;
+        }
+        .sub-input{
+            width:400px;
+            height:50px;
+            background-color: #2f79ba;
+            border-radius:10px;
+        }
+        .hint{
+            width:150px;
+            height:30px;
+        }
+        .success{
+            border:2px solid #26AC26;
+        }
+        .fail{
+            border:2px solid #FC5151;
+        }
+        .successfont{
+            color:#26AC26;
+        }
+        .failfont{
+            color:#FC5151;
+        }
+    </style>
+</head>
+<body >
+<form action="#" id="form" class="form">
+    <div class="name">
+        <div class="label">
+            <label for="name">名称</label>
+        </div>
+        <div class="input">
+            <input name="name" id="name" type="text"  maxlength=16 required >
+        </div>
+        <div class="hint">
+            <i>请输入4~6个字符</i>
+        </div>
+    </div>
+    <div class="name">
+        <div class="label">
+            <label for="password">密码</label>
+        </div>
+        <div class="input">
+            <input name="passwrod" id="password" type="password"  required  >
+        </div>
+        <div class="hint">
+            <i></i>
+        </div>
+    </div>
+    <div class="name">
+        <div class="label">
+            <label for="name">密码确认</label>
+        </div>
+        <div class="input">
+            <input name="passwordconfirm" id="passwordconfirm" type="password"  required  >
+        </div>
+        <div class="hint">
+            <i></i>
+        </div>
+    </div>
+    <div class="name">
+        <div class="label">
+            <label for="email">邮箱</label>
+        </div>
+        <div class="input">
+            <input name="email" id="email" type="email"  required  >
+        </div>
+        <div class="hint">
+            <i></i>
+        </div>
+    </div>
+    <div class="name">
+        <div class="label">
+            <label for="phone">手机</label>
+        </div>
+        <div class="input">
+            <input name="phone" id="phone" type="tel"  required  >
+        </div>
+        <div class="hint">
+            <i></i>
+        </div>
+    </div>
+    <div class="sub">
+    <input class="sub-input" type="submit" value="提交">
+    </div>
+</form>
+</body>
+<script>
+    window.onload=function(){
+        var biaodan=document.getElementById("form");
+        var inputs=biaodan.getElementsByTagName("input");
+        var inputsArry=[];
+        console.log(inputs)
+        for(let i=0;i<inputs.length-1;i++){
+         inputsArry.push(inputs[i]);
+        }
+        for(let i=0;i<inputsArry.length;i++){
+            inputsArry[i].addEventListener("blur",function(){
+                //form.test(this);
+                test(this);
+            })
+        }
+        inputs[5].addEventListener("click",function(){
+            if(nameTest(inputs[0])&&password(inputs[1])&&passwordconfirm(inputs[2])&&email(inputs[3])&&phone(inputs[4])){
+                alert("提交成功")
+            }
+            else{
+                alert("输入有误")
+            }
+        })
+    };
+    const data=[
+        ['用户名不能为空！','用户名格式不正确！', '用户名格式正确！'],
+        [ '密码不能为空！', '密码格式应为8-16位字母数字组合！','密码可用！'],
+        [ '密码确认不能为空！', '两次输入的密码不一致！', '两次输入密码一致！' ],
+        [ '邮箱不能为空！', '邮箱格式不正确！', '邮箱格式正确！'],
+        [ '手机号码不能为空！','手机号码格式不正确！', '手机号码格式正确！']
+    ];
+    var test=function(element){
+        switch (element.id) {
+            case 'name':
+                nameTest(element);
+                break;
+            case 'password':
+                password(element);
+                break;
+            case 'passwordconfirm':
+                passwordconfirm(element);
+                break;
+            case 'email':
+                email(element);
+                break;
+            case 'phone':
+                phone(element);
+                break;
+            default :
+                break;
+        }
+    }
+    var successShow=function(element,i){
+        element.parentNode.nextSibling.nextSibling.innerHTML='<i>'+data[i][2]+'</i>';
+        element.className='success';
+        element.parentNode.nextSibling.nextSibling.className="successfont hint";
+    }
+    var noneShow=function(element,i){
+        element.parentNode.nextSibling.nextSibling.innerHTML='<i>'+data[i][0]+'</i>';
+        element.className='fail';
+        element.parentNode.nextSibling.nextSibling.className="failfont hint";
+    }
+    var failShow=function(element,i){
+        element.parentNode.nextSibling.nextSibling.innerHTML='<i>'+data[i][1]+'</i>';
+        element.className='fail';
+        element.parentNode.nextSibling.nextSibling.className="failfont hint";
+    }
+     var nameTest=function(element){
+        var value=element.value;
+        var reValue=value.replace(/[\u4E00-\u9FA5]/g ,"AB");
+         console.log(reValue)
+        if(reValue.length>=4&&reValue.length<=16){
+            successShow(element,0);
+            return true;
+        }
+        else if(reValue.length==0){
+            noneShow(element,0);
+            return false;
+        }
+        else{
+            failShow(element,0);
+            return false;
+        }
+    }
+    var password=function(element){
+        if(element.value.length>=8&&element.value.length<=16&&/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(element.value)){
+           successShow(element,1);
+            return true;
+        }
+        else if(element.value.length==0){
+            noneShow(element,1);
+            return false;
+        }
+        else {
+            failShow(element,1);
+            return false;
+        }
+    }
+    var passwordconfirm=function(element){
+        if(element.value==document.getElementById("password").value){
+            successShow(element,2);
+            return true;
+        }
+        else if(element.value==0){
+            noneShow(element,2);
+            return false;
+        }
+        else{
+            failShow(element,2);
+            return false;
+        }
+    }
+    var email=function(element){
+        if( /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(element.value)){
+            successShow(element,3);
+            return true;
+        }
+        else if(element.value==0){
+            noneShow(element,3);
+            return false;
+        }
+        else{
+            failShow(element,3);
+            return false;
+        }
+    }
+    var phone=function(element){
+        if( /(13\d|14[57]|15[^4,\D]|17[678]|18\d)\d{8}|170[059]\d{7}/.test(element.value)){
+            successShow(element,4);
+            return true;
+        }
+        else if(element.value==0){
+            noneShow(element,4);
+            return false;
+        }
+        else{
+            failShow(element,4);
+            return false;
+        }
+    }
+
+
+</script>
+</html>
