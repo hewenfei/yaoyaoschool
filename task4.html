@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+
+        #canvas{
+            box-shadow: 5px 5px 3px #888888;
+            position:absolute;
+            top:0px;
+            left:0px;
+        }
+        .canvas{
+            width:600px;
+            height:600px;
+            position:relative;
+        }
+        #canvas2{
+            position: absolute;
+
+        }
+    </style>
+</head>
+<body>
+<div class="canvas">
+    <canvas id="canvas" width="600" height="600"></canvas>
+    <canvas id="canvas2" style="left:100px;top:50px;" width="50" height="50"></canvas>
+
+</div>
+<div>
+    <select id="select">
+        <option id="go">go</option>
+        <option id="left">turnLeft</option>
+        <option id="right">turnRight</option>
+        <option id="back">back</option>
+    </select>
+    <input id="action" type="button" value="执行">
+</div>
+<script>
+    var     canvas=document.getElementById("canvas"),
+            canvas2=document.getElementById("canvas2"),
+            context=canvas.getContext("2d"),
+            context2=canvas2.getContext("2d"),
+            action=document.getElementById("action"),//执行按钮
+            select=document.getElementById("select"),//下拉菜单
+            X=parseInt(canvas2.style.left),//初始位置
+            Y=parseInt(canvas2.style.top),
+            direction="正向";//记录小方块的方向
+    //添加事件
+    action.addEventListener("click",function(){
+        var option=select.selectedIndex;
+        instructions(option);
+    });
+    //图
+    function grid(){
+        context.clearRect(0,0,600,600);
+        context.beginPath();
+        context.lineWidth=5;
+        context.strokeStyle="#222222";
+        context.rect(50,50,500,500);
+        context.stroke();
+        context.translate(50,50);
+        context.beginPath();
+        context.lineWidth=1;
+        context.strokeStyle="#BFBFBF";
+        for(let i=0;i<9;i++){
+            context.moveTo(50+i*50,0);
+            context.lineTo(50+i*50,500);
+            context.stroke();
+        }
+        for(let i=0;i<9;i++){
+            context.moveTo(0,50+i*50);
+            context.lineTo(500,50+i*50);
+            context.stroke();
+        }
+    }
+    //字
+    function font(){
+        var font=["1","2","3","4","5","6","7","8","9","10"];
+        context.beginPath();
+        context.font="bold 12px";
+        context.strokeStyle="#888888";
+        context.textAlign="left";
+        context.textBaseline="top";
+        for(let i=0;i<10;i++){
+            context.strokeText(font[i],25+i*50,-20);
+        }
+        for(let i=0;i<10;i++){
+            context.strokeText(font[i],-20,25+i*50);
+        }
+    }
+//方块4种形态
+    function block1(){
+        context2.clearRect(0,0,50,50);
+        context2.fillStyle="#0302ff";
+        context2.fillRect(0,0,50,10);
+        context2.beginPath();
+        context2.fillStyle="#fe0000";
+        context2.fillRect(0,10,50,40);
+    }
+    function block2(){
+        context2.clearRect(0,0,50,50);
+        context2.fillStyle="#0302ff";
+        context2.fillRect(40,0,50,50);
+        context2.beginPath();
+        context2.fillStyle="#fe0000";
+        context2.fillRect(0,0,40,50);
+    }
+    function block3(){
+        context2.clearRect(0,0,50,50);
+        context2.fillStyle="#0302ff";
+        context2.fillRect(0,40,50,50);
+        context2.beginPath();
+        context2.fillStyle="#fe0000";
+        context2.fillRect(0,0,50,40);
+    }
+    function block4(){
+        context2.clearRect(0,0,50,50);
+        context2.fillStyle="#0302ff";
+        context2.fillRect(0,0,10,50);
+        context2.beginPath();
+        context2.fillStyle="#fe0000";
+        context2.fillRect(10,0,50,50);
+    }
+
+    //控制函数
+    function instructions(option){
+        switch (option){
+            case 0:
+                go();
+                break;
+            case 1:
+                turnLeft();
+                break;
+            case 2:
+                turnRight();
+                break;
+            case 3:
+                back();
+                break;
+            default :
+                break;
+        }
+    }
+
+    function turnLeft(){
+        if(direction=="正向"){
+            block4();
+            direction="左向";
+        }
+        else if(direction=="左向"){
+            block3();
+            direction="反向";
+        }
+        else if(direction=="反向"){
+            block2();
+            direction="右向";
+        }
+        else if(direction=="右向"){
+            block1();
+            direction="正向";
+        }
+    }
+    function turnRight(){
+        switch (direction){
+            case "正向":
+                block2();
+                    direction="右向";
+                break;
+            case "右向":
+                block3();
+                    direction="反向";
+                break;
+            case "反向":
+                block4();
+                direction="左向";
+                break;
+            case "左向":
+                block1();
+                direction="正向";
+                break;
+            default :
+                break;
+        }
+    }
+    function back(){
+        switch (direction){
+            case "正向":
+                block3();
+                direction="反向";
+                break;
+            case "右向":
+                block4();
+                direction="左向";
+                break;
+            case "反向":
+                block1();
+                direction="正向";
+                break;
+            case "左向":
+                block2();
+                direction="右向";
+                break;
+            default :
+                break;
+        }
+    }
+    function go(){
+        switch (direction){
+            case "正向":
+                if(Y<=50){
+                    alert("超出范围");
+                }
+                else{
+                    Y-=50;
+                    canvas2.style.top=Y+"px";
+                }
+                break;
+            case "右向":
+                if(X>=500){
+                    alert("超出范围");
+                }
+                else {
+                    X+=50;
+                    canvas2.style.left=X+"px";
+                }
+                break;
+            case "反向":
+                if(Y>=500){
+                    alert("超出范围");
+                }
+                else{
+                    Y+=50;
+                    canvas2.style.top=Y+"px";
+                }
+                break;
+            case "左向":
+                if(X<=50){
+                    alert("超出范围");
+                }
+                else {
+                    X-=50;
+                    canvas2.style.left=X+"px";
+                }
+                break;
+            default :
+                break;
+        }
+    }
+    grid();
+    font();
+    block1()
+</script>
+</body>
+</html>
