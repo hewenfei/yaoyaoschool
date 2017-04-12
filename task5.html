@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        #canvas{
+            box-shadow: 5px 5px 3px #888888;
+            position:absolute;
+            top:0px;
+            left:0px;
+        }
+        .canvas{
+            width:600px;
+            height:600px;
+            position:relative;
+        }
+        #container{
+            width:50px;
+            height:50px;
+            position: absolute;
+            left:200px;
+            top:100px;
+        }
+        #canvas2{
+            margin-left: -15px;
+            margin-top: -15px;
+        }
+
+
+    </style>
+</head>
+<body>
+<div class="canvas">
+    <canvas id="canvas" width="600" height="600"></canvas>
+    <div id="container" style="left:200px;top:100px">
+        <canvas id="canvas2" style="left:100px;top:50px;" width="80" height="80"></canvas>
+    </div>
+</div>
+<div>
+    <select id="select">
+        <option id="go">go</option>
+        <option id="left">turnLeft</option>
+        <option id="right">turnRight</option>
+        <option id="back">back</option>
+        <option>TRA TOP</option>
+        <option>TRA RIG</option>
+        <option>TRA BOT</option>
+        <option>TRA LEF</option>
+        <option>MOV TOP</option>
+        <option>MOV RIG</option>
+        <option>MOV BOT</option>
+        <option>MOV LEF</option>
+    </select>
+    <input id="action" type="button" value="执行">
+</div>
+<script>
+console.log("xxxxStar");
+    var     canvas=document.getElementById("canvas"),
+            canvas2=document.getElementById("canvas2"),
+            container=document.getElementById("container"),
+            context=canvas.getContext("2d"),
+            context2=canvas2.getContext("2d"),
+            action=document.getElementById("action"),//执行按钮
+            select=document.getElementById("select"),//下拉菜单
+            X=parseInt(container.style.left),//初始位置
+            Y=parseInt(container.style.top),
+            direction="正向"; //记录小方块的方向
+    //添加事件
+    action.addEventListener("click",function(){
+        var option=select.selectedIndex;
+        instructions(option);
+    });
+//调整中心
+context2.translate(40,40);
+    //图
+    function grid(){
+        context.clearRect(0,0,600,600);
+        context.beginPath();
+        context.lineWidth=5;
+        context.strokeStyle="#222222";
+        context.rect(50,50,500,500);
+        context.stroke();
+        context.translate(50,50);
+        context.beginPath();
+        context.lineWidth=1;
+        context.strokeStyle="#BFBFBF";
+        for(let i=0;i<9;i++){
+            context.moveTo(50+i*50,0);
+            context.lineTo(50+i*50,500);
+            context.stroke();
+        }
+        for(let i=0;i<9;i++){
+            context.moveTo(0,50+i*50);
+            context.lineTo(500,50+i*50);
+            context.stroke();
+        }
+    }
+    //字
+    function font(){
+        var font=["1","2","3","4","5","6","7","8","9","10"];
+        context.beginPath();
+        context.font="bold 12px";
+        context.strokeStyle="#888888";
+        context.textAlign="left";
+        context.textBaseline="top";
+        for(let i=0;i<10;i++){
+            context.strokeText(font[i],25+i*50,-20);
+        }
+        for(let i=0;i<10;i++){
+            context.strokeText(font[i],-20,25+i*50);
+        }
+    }
+    //方块
+    function block(angle){
+        context2.clearRect(-40,-40,80,80);
+        context2.beginPath();
+        context2.save();
+        context2.rotate(angle*Math.PI/180);
+        context2.fillStyle="#0302ff";
+        context2.fillRect(-25,-25,50,10);
+        context2.beginPath();
+        context2.fillStyle="#fe0000";
+        context2.fillRect(-25,-15,50,40);
+        context2.restore();
+    }
+    //转向函数
+    function toTurn(angle1,angle2){
+        var add=angle1<angle2 ? 3 : -3;
+        var time=Math.abs(angle1-angle2)/3;
+//        context2.rotate(90*Math.PI/180);
+        for(var i=0;i<time;i++){
+            (function(){setTimeout(function(){
+                angle1=angle1+add;
+                block(angle1);
+            },i/time*1000)})();
+        }
+
+    }
+
+    //控制函数
+    function instructions(option){
+        switch (option){
+            case 0:
+                go();
+                break;
+            case 1:
+                turnLeft();
+                break;
+            case 2:
+                turnRight();
+                break;
+            case 3:
+                back();
+                break;
+            case 4:
+                if(Y<=50){
+                    alert("超出范围");
+                }
+                else{
+                    Y-=50;
+                    for(let i=0;i<25;i++){
+                        setTimeout(function(){
+                            container.style.top=parseInt(container.style.top)-2+"px";
+                        },i/25*1000)
+                    }
+                }
+                break;
+            case 5:
+                if(X>=500){
+                    alert("超出范围");
+                }
+                else {
+                    X+=50;
+                    for(let i=0;i<25;i++){
+                        setTimeout(function(){
+                            container.style.left=parseInt(container.style.left)+2+"px";
+                        },i/25*1000)
+                    }
+                }
+                break;
+            case 6:
+                if(Y>=500){
+                    alert("超出范围");
+                }
+                else{
+                    Y+=50;
+                    for(let i=0;i<25;i++){
+                        setTimeout(function(){
+                            container.style.top=parseInt(container.style.top)+2+"px";
+                        },i/25*1000)
+                    }
+                }
+                break;
+            case 7:
+                if(X<=50){
+                    alert("超出范围");
+                }
+                else {
+                    X-=50;
+                    for(let i=0;i<25;i++){
+                        setTimeout(function(){
+                            container.style.left=parseInt(container.style.left)-2+"px";
+                        },i/25*1000)
+                    }
+                }
+                break;
+            case 8:
+                    mov("正向");
+                break;
+            case 9:
+                    mov("右向");
+                break;
+            case 10:
+                    mov("反向");
+                break;
+            case 11:
+                    mov("左向");
+                break;
+            default :
+                break;
+        }
+    }
+//左转函数
+    function turnLeft(){
+        console.log("xxxxStar");
+        if(direction=="正向"){
+            toTurn(0,-90);
+            direction="左向";
+        }
+        else if(direction=="左向"){
+            toTurn(270,180);
+            direction="反向";
+        }
+        else if(direction=="反向"){
+            toTurn(180,90);
+            direction="右向";
+        }
+        else if(direction=="右向"){
+            toTurn(90,0);
+            direction="正向";
+        }
+        console.log("xxxxEnd");
+    }
+    //右转函数
+    function turnRight(){
+        switch (direction){
+            case "正向":
+                toTurn(0,90);
+                direction="右向";
+                break;
+            case "右向":
+                toTurn(90,180);
+                direction="反向";
+                break;
+            case "反向":
+                toTurn(180,270);
+                direction="左向";
+                break;
+            case "左向":
+                toTurn(-90,0);
+                direction="正向";
+                break;
+            default :
+                break;
+        }
+    }
+    //后退函数
+    function back(){
+        switch (direction){
+            case "正向":
+                toTurn(0,180);
+                direction="反向";
+                break;
+            case "右向":
+                toTurn(90,270);
+                direction="左向";
+                break;
+            case "反向":
+                toTurn(180,0);
+                direction="正向";
+                break;
+            case "左向":
+                toTurn(270,90);
+                direction="右向";
+                break;
+            default :
+                break;
+        }
+    }
+    //控制函数
+    function go(){
+        console.log("xxxxStar");
+        switch (direction){
+            case "正向":
+                if(Y<=50){
+                    alert("超出范围");
+                }
+                else{
+                    Y-=50;
+                    for(let i=0;i<25;i++){
+                        setTimeout(function(){
+                            container.style.top=parseInt(container.style.top)-2+"px";
+                        },i/25*1000)
+                    }
+                }
+                break;
+            case "右向":
+                if(X>=500){
+                    alert("超出范围");
+                }
+                else {
+                    X+=50;
+                    for(let i=0;i<25;i++){
+                        setTimeout(function(){
+                            container.style.left=parseInt(container.style.left)+2+"px";
+                        },i/25*1000)
+                    }
+                }
+                break;
+            case "反向":
+                if(Y>=500){
+                    alert("超出范围");
+                }
+                else{
+                    Y+=50;
+                    for(let i=0;i<25;i++){
+                        setTimeout(function(){
+                            container.style.top=parseInt(container.style.top)+2+"px";
+                        },i/25*1000)
+                    }
+                }
+                break;
+            case "左向":
+                if(X<=50){
+                    alert("超出范围");
+                }
+                else {
+                    X-=50;
+                    for(let i=0;i<25;i++){
+                        setTimeout(function(){
+                            container.style.left=parseInt(container.style.left)-2+"px";
+                        },i/25*1000)
+                    }
+                }
+                break;
+            default :
+                break;
+        }
+        console.log("xxxxEnd");
+    }
+    function mov(to){
+        if(direction==to){
+            go();
+        }
+        else{
+            turnLeft();
+            mov(to);
+        }
+    }
+    grid();
+    font();
+    block(0);
+//    block1();
+console.log("xxxxEnd");
+</script>
+</body>
+</html>
